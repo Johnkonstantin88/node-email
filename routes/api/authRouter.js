@@ -1,6 +1,8 @@
 const express = require("express");
 const {
   registerUser,
+  verifyEmail,
+  resendVerifyEmail,
   loginUser,
   getCurrentUser,
   logoutUser,
@@ -12,12 +14,22 @@ const { schemas } = require("../../models/user");
 
 const authRouter = express.Router();
 
+// Sign up
 authRouter.post(
   "/register",
   validateBody(schemas.registerOrLoginSchema),
   registerUser
 );
 
+authRouter.get("/users/verify/:verificationToken", verifyEmail);
+
+authRouter.post(
+  "/users/verify",
+  validateBody(schemas.verifySchema),
+  resendVerifyEmail
+);
+
+// Sign in
 authRouter.post(
   "/login",
   validateBody(schemas.registerOrLoginSchema),
@@ -28,6 +40,7 @@ authRouter.get("/current", authenticate, getCurrentUser);
 
 authRouter.post("/logout", authenticate, logoutUser);
 
+// Updates
 authRouter.patch(
   "/users",
   authenticate,
